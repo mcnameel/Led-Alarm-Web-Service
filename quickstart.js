@@ -1,6 +1,4 @@
 var mqtt = require('mqtt')
-const express = require('express')
-const app = express()
 
 const ALARM_TOPIC = 'alarm'
 const DEBUG_TOPIC = 'debug'
@@ -28,7 +26,9 @@ var client = {}
       username: client_username,
       password: client_password
     })
-     
+    
+    // When we connect to the MQTT broker, subscribe to the desired topics and
+    //   publish that the server is listening to DEBUG
     client.on('connect', function () {
       console.log(DEVICE + ' is connected to MQTT')
     
@@ -38,18 +38,23 @@ var client = {}
       client.subscribe(REQUEST_TOPIC)  
     })
     
-    
-    
+    // When we recieve a published message
     client.on('message', function (topic, message) {
-      if(topic === REQUEST_TOPIC) {
+      // if the message is a request then initialize communication with google
+      if(topic === REQUEST_TOPIC) { 
         console.log('\n++++++++++begin getting events+++++++++++')     
+        // We must begin with authoriation every time otherwhise we will not 
+        //   have access to events added after the first authorization
         connectAndGetStuffFromGoogle()
       }
-      else if(topic === DEBUG_TOPIC)
+      else if(topic === DEBUG_TOPIC) // if debug then print message to terminal
         console.log('Debug Message: ' + message.toString())
     })
   });
 
+/**
+ * Authorize request from google then request calendar events
+ */
 function connectAndGetStuffFromGoogle() {
 // Load client secrets from a local file.
 fs.readFile('client_secret.json', (err, content) => {
