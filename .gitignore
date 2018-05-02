@@ -1,3 +1,8 @@
+# Credentials
+*credentials.json
+*client_secret.json
+*mqtt_credentials.json
+
 # Logs
 logs
 *.log
